@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>mose@2026</title>
+<style>
+:root{--bg:#eef0f3;--card:#fff;--ink:#14202e;--mute:#6a7686;--line:#dfe3e9;--gold:#b8860b;--up:#12805c;--dn:#c0392b;--e1:#2563b0;--e2:#8e44ad;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b121b;--card:#121c28;--ink:#e6ebf2;--mute:#8896a8;--line:#223142;--gold:#e3b23c;--up:#2fc08f;--dn:#f0705f;--e1:#6da6f0;--e2:#c08be0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#0f2a43;color:#f4efe0;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{font:700 20px Georgia,serif}.brand i{color:#e3b23c;font-style:normal}
+.sp{flex:1}
+.pill,button{background:rgba(255,255,255,.14);color:inherit;border:0;border-radius:99px;padding:4px 10px;font:12px system-ui,sans-serif}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2fc08f;margin-right:6px}.dot.off{background:#f0705f}
+main{max-width:1100px;margin:0 auto;padding:12px;display:grid;gap:12px}
+.k{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:700px){.k{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1000px){.k{grid-template-columns:repeat(6,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.card small{color:var(--mute);font-size:12px}
+.v{display:block;font:600 22px Georgia,serif}
+.g{display:grid;gap:12px}
+@media(min-width:1000px){.g{grid-template-columns:2fr 1fr}}
+h2{margin:0 0 8px;font:600 14px system-ui}
+canvas{width:100%;display:block}
+#cv{height:300px}#eqc{height:100px}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.r{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.r:last-child{border:0}.r span:first-child{color:var(--mute)}
+.gauge{position:relative;height:10px;border-radius:5px;margin:10px 0 14px;background:linear-gradient(90deg,var(--up) 0 30%,var(--line) 30% 70%,var(--dn) 70% 100%)}
+.gauge i{position:absolute;top:-4px;width:4px;height:18px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:420px}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500}
+#feed{max-height:220px;overflow-y:auto}
+.m{border-left:3px solid var(--gold);padding:4px 8px;margin-bottom:6px;background:var(--bg);border-radius:0 6px 6px 0;font-size:13px}
+.nb{border-left:5px solid var(--up)}.nb.warn{border-left-color:var(--gold)}
+.nb.blk{border-left-color:var(--dn);background:rgba(192,57,43,.12);animation:p 1.4s infinite}
+@keyframes p{50%{background:rgba(192,57,43,.25)}}
+@media(prefers-reduced-motion:reduce){.nb.blk{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">mose<i>@</i>2026</div>
+  <div class="sp"></div>
+  <span class="pill"><span class="dot off" id="dot"></span><span id="stat">Connecting…</span></span>
+  <button id="pwbtn">Password</button>
+</header>
+<main>
+  <section class="card nb" id="news" style="display:none"></section>
+  <section class="k">
+    <div class="card"><small>XAUUSD</small><b class="v" id="px">—</b></div>
+    <div class="card"><small>Equity</small><b class="v" id="eq">—</b></div>
+    <div class="card"><small>Daily P/L</small><b class="v" id="day">—</b></div>
+    <div class="card"><small>Open trades</small><b class="v" id="open">—</b></div>
+    <div class="card"><small>Win rate (30d)</small><b class="v" id="win">—</b></div>
+    <div class="card"><small>Profit factor</small><b class="v" id="pf">—</b></div>
+  </section>
+  <section class="g">
+    <div class="card"><h2>Price with EMA 20 / 50</h2><canvas id="cv"></canvas></div>
+    <div class="g" style="align-content:start">
+      <div class="card"><h2>Signal engine</h2>
+        <div class="r"><span>Trend (EMA)</span><b id="tr">—</b></div>
+        <div class="r"><span>Higher TF trend</span><b id="htf">—</b></div>
+        <div class="r"><span>RSI</span><b id="rsi">—</b></div>
+        <div class="gauge"><i id="gm" style="left:50%"></i></div>
+        <div class="r"><span>ATR / ratio</span><b id="atr">—</b></div>
+        <div class="r"><span>Spread</span><b id="sp">—</b></div>
+        <div class="r"><span>Loss streak</span><b id="st">—</b></div>
+        <div class="r"><span>Weekly P/L</span><b id="wk">—</b></div>
+        <div class="r"><span>Drawdown</span><b id="dd">—</b></div>
+        <div class="r"><span>Last action</span><span id="last" style="text-align:right">—</span></div>
+      </div>
+      <div class="card"><h2>Equity curve</h2><canvas id="eqc"></canvas></div>
+    </div>
+  </section>
+  <section class="g">
+    <div class="card"><h2>Open positions</h2><div class="sc"><table><thead><tr><th>Side</th><th>Lots</th><th>Entry</th><th>SL</th><th>TP</th><th>P/L $</th></tr></thead><tbody id="pos"></tbody></table></div></div>
+    <div class="card"><h2>Event feed</h2><div id="feed"></div></div>
+  </section>
+  <section class="card"><h2>Trade history (last 15)</h2><div class="sc"><table><thead><tr><th>Side</th><th>Lots</th><th>Entry</th><th>Exit</th><th>Result</th><th>P/L $</th></tr></thead><tbody id="hist"></tbody></table></div></section>
+  <div style="color:var(--mute);font-size:12px;text-align:center">Monitoring only. Nothing here can place or close trades.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const f2=n=>Number(n).toFixed(2);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const trendTxt=t=>t===1?'BULLISH ▲':t===-1?'BEARISH ▼':'NEUTRAL ─';
+let pw='';try{pw=sessionStorage.getItem('mosepw')||''}catch(e){}
+let locked=false,lastSeen='',lastBlk=false,curve=[],S=null;
+
+function askPw(){const p=prompt('Dashboard password');if(p){pw=p;try{sessionStorage.setItem('mosepw',p)}catch(e){}locked=false;poll()}}
+function status(t,bad){$('stat').textContent=t;$('dot').className='dot'+(bad?' off':'')}
+function feed(t,color){const d=document.createElement('div');d.className='m';if(color)d.style.borderColor=color;
+  d.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'  '+t;const f=$('feed');f.prepend(d);while(f.children.length>30)f.lastChild.remove()}
+function pct(id,v){const e=$(id);e.textContent=(v>=0?'+':'')+f2(v)+'%';e.className='v '+(v>=0?'up':'dn')}
+function ema(a,n){const k=2/(n+1);let e=a[0];return a.map((v,i)=>i?(e=v*k+e*(1-k)):e)}
+
+async function poll(){
+  try{
+    const r=await fetch('/api/state',{cache:'no-store',headers:{'X-View-Password':pw}});
+    if(r.status===401){status('Locked – password needed',true);if(!locked){locked=true;askPw()}return}
+    if(r.status===429){status('Too many attempts – wait 15 min',true);return}
+    const j=await r.json();
+    if(!j.connected){status('MT5 offline – check the EA',true);$('last').textContent=j.age!=null?'Last data '+Math.round(j.age)+'s ago':'No data yet';return}
+    S=j.state;render(S);
+  }catch(e){status('Server unreachable',true)}
+}
+
+function render(s){
+  const st=s.stats||{},n=s.news||{},pos=s.positions||[],hist=s.history||[];
+  $('px').textContent=f2(s.bid);$('eq').textContent='$'+f2(s.equity);pct('day',s.daily_pct);
+  $('open').textContent=pos.length+' / '+s.max_positions;
+  $('win').textContent=st.trades?Math.round(st.win_rate)+'%':'—';
+  $('pf').textContent=st.trades?f2(st.pf):'—';
+  status(s.status,/NEWS|KILL|LIMIT|MAX|PAUSED/.test(s.status));
+  $('tr').textContent=trendTxt(s.trend);$('htf').textContent=trendTxt(s.htf);
+  $('rsi').textContent=f2(s.rsi);$('gm').style.left=Math.max(2,Math.min(98,s.rsi))+'%';
+  $('atr').textContent=f2(s.atr)+' / '+f2(s.atr_ratio);$('sp').textContent=s.spread+' pts';
+  $('st').textContent=st.streak||0;$('wk').textContent=f2(s.weekly_pct)+'%';
+  $('dd').textContent=f2(s.dd_pct)+'% (max '+f2(st.max_dd||0)+'%)';
+  $('last').textContent=s.last_action;
+  if(s.last_action&&s.last_action!==lastSeen){lastSeen=s.last_action;feed(s.last_action)}
+  if(!!n.blocked!==lastBlk){lastBlk=!!n.blocked;feed(n.blocked?'[!! NEWS !!] TRADING BLOCKED: '+n.name+' until '+n.until:'[!! NEWS !!] Block ended – trading allowed again',n.blocked?css('--dn'):css('--up'))}
+  renderNews(n);
+  $('pos').innerHTML=pos.length?pos.map(p=>`<tr><td class="${p.side==='BUY'?'up':'dn'}">${p.side}</td><td>${f2(p.lots)}</td><td>${f2(p.entry)}</td><td>${f2(p.sl)}</td><td>${f2(p.tp)}</td><td class="${p.pl>=0?'up':'dn'}">${f2(p.pl)}</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:left;color:var(--mute)">No open positions.</td></tr>';
+  $('hist').innerHTML=hist.length?hist.map(h=>`<tr><td class="${h.side==='BUY'?'up':'dn'}">${h.side}</td><td>${f2(h.lots)}</td><td>${f2(h.entry)}</td><td>${f2(h.exit)}</td><td>${esc(h.res)}</td><td class="${h.pl>=0?'up':'dn'}">${f2(h.pl)}</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:left;color:var(--mute)">No closed trades yet.</td></tr>';
+  curve.push(s.equity);if(curve.length>200)curve.shift();
+  draw(s);
+}
+
+function renderNews(n){
+  const el=$('news');if(!n||n.enabled===undefined){el.style.display='none';return}
+  const u=(n.upcoming||[])[0];let cls='card nb',h;
+  if(n.enabled===false)h='<b>Major news filter: OFF</b>';
+  else if(n.blocked){cls+=' blk';h='<b>NEWS BLOCK ACTIVE</b> · '+esc(n.name)+' ('+esc(n.cur||'')+') · no new trades until '+esc(n.until)}
+  else if(u&&u.mins<=60){cls+=' warn';h='<b>Major news soon</b> · '+esc(u.name)+' ('+esc(u.cur)+') in '+u.mins+' min'}
+  else h='<b>News clear</b>'+(u?' · next: '+esc(u.name)+' ('+esc(u.cur)+') in '+(u.mins>=120?Math.round(u.mins/60)+' h':u.mins+' min'):' · no major events scheduled');
+  el.style.display='';el.className=cls;el.innerHTML=h;
+}
+
+function ctx(id){const c=$(id),d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(c.width!==w*d||c.height!==h*d){c.width=w*d;c.height=h*d}const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);return[x,w,h]}
+function draw(s){
+  let[x,w,h]=ctx('cv');const all=(s.bars||[]).map(b=>({o:b[0],h:b[1],l:b[2],c:b[3]}));if(all.length<2)return;
+  const N=Math.min(70,all.length),v=all.slice(-N),cl=all.map(b=>b.c),ef=ema(cl,20).slice(-N),es=ema(cl,50).slice(-N);
+  let lo=Math.min(...v.map(b=>b.l)),hi=Math.max(...v.map(b=>b.h));
+  (s.positions||[]).forEach(p=>{[p.sl,p.tp].forEach(q=>{if(q>0){lo=Math.min(lo,q);hi=Math.max(hi,q)}})});
+  const pd=(hi-lo)*.06||1;lo-=pd;hi+=pd;const Y=p=>h-(p-lo)/(hi-lo)*h,cw=(w-52)/N;
+  x.font='11px system-ui';x.fillStyle=css('--mute');x.strokeStyle=css('--line');
+  for(let i=0;i<=4;i++){const p=lo+(hi-lo)*i/4,y=Y(p);x.beginPath();x.moveTo(0,y);x.lineTo(w-48,y);x.stroke();x.fillText(p.toFixed(1),w-46,y-2)}
+  v.forEach((b,i)=>{const cx=i*cw+cw/2;x.strokeStyle=x.fillStyle=b.c>=b.o?css('--up'):css('--dn');x.beginPath();x.moveTo(cx,Y(b.h));x.lineTo(cx,Y(b.l));x.stroke();x.fillRect(cx-cw*.32,Math.min(Y(b.o),Y(b.c)),cw*.64,Math.max(1,Math.abs(Y(b.o)-Y(b.c))))});
+  [[ef,'--e1'],[es,'--e2']].forEach(([a,c])=>{x.strokeStyle=css(c);x.lineWidth=1.5;x.beginPath();a.forEach((p,i)=>i?x.lineTo(i*cw+cw/2,Y(p)):x.moveTo(cw/2,Y(p)));x.stroke()});
+  x.lineWidth=1;x.setLineDash([4,4]);
+  (s.positions||[]).forEach(p=>[['entry','--gold'],['sl','--dn'],['tp','--up']].forEach(([k,c])=>{if(p[k]>0){x.strokeStyle=css(c);x.beginPath();x.moveTo(0,Y(p[k]));x.lineTo(w-48,Y(p[k]));x.stroke()}}));
+  x.setLineDash([]);
+  [x,w,h]=ctx('eqc');if(curve.length<2)return;
+  const mn=Math.min(...curve),mx=Math.max(...curve),rg=(mx-mn)||1;
+  x.strokeStyle=curve[curve.length-1]>=curve[0]?css('--up'):css('--dn');x.lineWidth=2;x.beginPath();
+  curve.forEach((p,i)=>{const px=i/(curve.length-1)*w,py=h-4-(p-mn)/rg*(h-8);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+}
+
+$('pwbtn').onclick=askPw;
+addEventListener('resize',()=>{if(S)draw(S)});
+setInterval(poll,5000);poll();
+</script>
+</body>
+</html>
